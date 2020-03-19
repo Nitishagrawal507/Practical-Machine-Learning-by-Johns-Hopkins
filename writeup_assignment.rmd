@@ -43,8 +43,7 @@ cData <- data
 for(i in c(8:ncol(cData)-1)) {cData[,i] = as.numeric(as.character(cData[,i]))}
 ```
 
-To solve the second issue we will be selecting only those columns that are having a 100% completion rate ( as seen in the previous analysis phase, the completion rate in this dataset is very binary). We will also filter some features which seem to be useless like "X", timestamps, "new_window" and "num_window". We also gonna filter user_name in as much as we don't want to learn from this feature.
-
+To solve the second issue we will be selecting only those columns that are having a 100% completion rate ( as seen in the previous analysis phase, the completion rate in this dataset is very binary). We will also filter some features which seem to be useless like "X", timestamps, "new_window" and "num_window".
 ```{r}
 featuresnames <- colnames(cData[colSums(is.na(cData)) == 0])[-(1:7)]
 features <- cData[featuresnames]
