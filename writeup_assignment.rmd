@@ -1,0 +1,81 @@
+Practical Machine Learning by Johns Hopkins University - Prediction Assignment Writeup
+========================================================
+
+This .rmd document describes the analysis done for the prediction assignment of the Practical ML course.
+
+The first part of this project is the declaration of the package which will be used. In addition to that caret package and randomForest has already been seen in this course, I have used Harrell Miscellaneous(Hmisc) to help me with the data analysis phases (, and foreach and doParallel libraries) to decrease the random forest processing time by parallelizing the operation.
+Note: to be reproducible, I also set the seed value.
+
+```{r}
+options(warn=-1)
+library(caret)
+library(randomForest)
+library(Hmisc)
+library(foreach)
+library(doParallel)
+set.seed(4356)
+```
+
+The initial step is to load the csv file and converting it to dataframes and then analyze the type and the completion rate of the data (commands are commented to limit the output size. You can run it deleting the "#" ) :
+
+```{r}
+data <- read.csv("/nitishagrawal507/Practical-Machine-Learning-by-Johns-Hopkins/datasets/pml-training.csv")
+#summary(data)
+#describe(data)
+#sapply(data, class)
+#str(data)
+```
+
+This analysis allows us to note two important points :
+ 1 - Some numeric data have been imported as a factor because of the presence of some characters ("#DIV/0!")
+ 2 - Some columns are having missing data
+ 
+To manage the first issue we need to reimport the data ignoring this "#DIV/0!" values:
+
+```{r}
+data <- read.csv("/nitishagrawal507/Practical-Machine-Learning-by-Johns-Hopkins/datasets/pml-training.csv", na.strings=c("#DIV/0!") )
+```
+
+And force the cast to numeric values for the specified columns (i.e.: 8 to end) :
+
+```{r}
+cData <- data
+for(i in c(8:ncol(cData)-1)) {cData[,i] = as.numeric(as.character(cData[,i]))}
+```
+
+To solve the second issue we will be selecting only those columns that are having a 100% completion rate ( as seen in the previous analysis phase, the completion rate in this dataset is very binary). We will also filter some features which seem to be useless like "X", timestamps, "new_window" and "num_window". We also gonna filter user_name in as much as we don't want to learn from this feature.
+
+```{r}
+featuresnames <- colnames(cData[colSums(is.na(cData)) == 0])[-(1:7)]
+features <- cData[featuresnames]
+```
+
+We have now a dataframe that contains all the proper functioning features. So the first step will be to split the dataset in two-part: the first for training and the second for testing.
+
+```{r}
+xdata <- createDataPartition(y=features$classe, p=3/4, list=FALSE )
+training <- features[xdata,]
+testing <- features[-xdata,]
+```
+
+
+Now, we can train the classifier with training data. To do so we have to parallelize the processing with the foreach and doParallel package: we call registerDoParallel to instantiate the configuration.
+
+```{r}
+registerDoParallel()
+model <- foreach(ntree=rep(150, 4), .combine=randomForest::combine) %dopar% randomForest(training[-ncol(training)], training$classe, ntree=ntree)
+```
+
+To evaluate the model we will use the confusion matrix method and we will be focusing on accuracy, sensitivity & specificity metrics :
+```{r}
+predictionsTr <- predict(model, newdata=training)
+confusionMatrix(predictionsTr,training$classe)
+predictionsTe <- predict(model, newdata=testing)
+confusionMatrix(predictionsTe,testing$classe)
+```
+
+To evaluate the model we will use the confusion matrix method and we will be focusing on the results of the confusion matrix, and it says that the model is good and efficient because it has an accuracy of 0.997 and terrific sensitivity and specificity values on the testing dataset.
+
+It seems outstanding because it scores 100% (20/20) on the Course Project Submission (the 20 values to predict).
+
+I have also run some tests on preprocessing generating PCA or scale and center the features but the accuracy was lower.
