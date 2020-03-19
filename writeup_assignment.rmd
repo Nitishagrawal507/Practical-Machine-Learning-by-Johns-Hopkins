@@ -65,7 +65,7 @@ registerDoParallel()
 model <- foreach(ntree=rep(150, 4), .combine=randomForest::combine) %dopar% randomForest(training[-ncol(training)], training$classe, ntree=ntree)
 ```
 
-To evaluate the model we will use the confusion matrix method and we will be focusing on accuracy, sensitivity & specificity metrics :
+To evaluate the model we will use the confusion matrix method and we will be focusing on accuracy, sensitivity and specificity metrics :
 ```{r}
 predictionsTr <- predict(model, newdata=training)
 confusionMatrix(predictionsTr,training$classe)
