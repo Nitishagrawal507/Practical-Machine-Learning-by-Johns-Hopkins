@@ -1,7 +1,7 @@
 Practical Machine Learning by Johns Hopkins University - Prediction Assignment Writeup
 ========================================================
 
-This .rmd document describes the analysis done for the prediction assignment of the Practical ML course.
+Both of the documents (i.e; .html and .rmd) describes the analysis done for the prediction assignment of the Practical ML course.
 
 The first part of this project is the declaration of the package which will be used. In addition to that caret package and randomForest has already been seen in this course, I have used Harrell Miscellaneous(Hmisc) to help me with the data analysis phases (, and foreach and doParallel libraries) to decrease the random forest processing time by parallelizing the operation.
 Note: to be reproducible, I also set the seed value.
