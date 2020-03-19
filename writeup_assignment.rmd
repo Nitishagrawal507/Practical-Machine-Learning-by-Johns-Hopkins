@@ -16,7 +16,7 @@ library(doParallel)
 set.seed(4356)
 ```
 
-The initial step is to load the csv file and converting it to dataframes and then analyze the type and the completion rate of the data (commands are commented to limit the output size. You can run it deleting the "#" ) :
+The initial step is to load the csv file and converting it to dataframes and then analyze the type and the completion rate of the data (commands are commented to limit the output size. You can run it by deleting the "#" ) :
 
 ```{r}
 data <- read.csv("/nitishagrawal507/Practical-Machine-Learning-by-Johns-Hopkins/datasets/pml-training.csv")
